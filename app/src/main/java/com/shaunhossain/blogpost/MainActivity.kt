@@ -28,6 +28,15 @@ class MainActivity : AppCompatActivity() {
         val repository= Repository()
         val viewModelProviderFactory = ViewModelProviderFactory(repository)
         viewModel = ViewModelProvider(this,viewModelProviderFactory).get(MainViewModel::class.java)
+
+        //For debugging purpose
+        /*GlobalScope.launch(Dispatchers.IO){
+
+            val comments = getAllPosts2()
+            if (comments.isSuccessful){
+                Log.d(TAG,comments.body().toString())
+            }
+        }*/
     }
 
     override fun onSupportNavigateUp(): Boolean {

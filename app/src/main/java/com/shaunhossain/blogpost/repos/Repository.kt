@@ -6,6 +6,10 @@ import com.shaunhossain.blogpost.network.NetworkInstrance
 import retrofit2.Response
 
 class Repository {
+        /*companion object{
+
+                suspend fun getAllPosts2(): Response<Posts> = NetworkInstrance.api.getPosts()
+        }*/
         suspend fun getAllPosts(): Response<Posts> = NetworkInstrance.api.getPosts()
 
 }

@@ -11,17 +11,22 @@ import com.shaunhossain.blogpost.repos.Repository
 import com.shaunhossain.blogpost.utils.Resource
 import kotlinx.coroutines.launch
 import retrofit2.Response
+import java.io.IOException
 
 
 class MainViewModel(
     val repository: Repository) : ViewModel() {
     private val TAG = "PostViewModel"
 
-    val posts: LiveData<Resource<Posts>>? = MutableLiveData()
+    val posts: MutableLiveData<Resource<Posts>>? = MutableLiveData()
     var postResponse: Posts?= null
 
+    init {
+        getPost()
+    }
+
     fun getPost() = viewModelScope.launch {
-        repository.getAllPosts()
+        safePostsCall()
     }
 
     private fun handlePosts(resource: Response<Posts>): Resource<Posts> {
@@ -35,6 +40,19 @@ class MainViewModel(
             }
         }
         return Resource.Error(resource.message())
+    }
+
+    private suspend fun safePostsCall(){
+        posts?.postValue(Resource.Loading())
+        try {
+                val response = repository.getAllPosts()
+                posts?.postValue(handlePosts(response))
+        } catch (t : Throwable){
+            when (t) {
+                is IOException -> posts!!.postValue(Resource.Error("Network Failure"))
+                else -> posts!!.postValue(Resource.Error("Conversion Error"))
+            }
+        }
     }
 
 }
